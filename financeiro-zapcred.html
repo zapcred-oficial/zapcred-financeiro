@@ -886,28 +886,31 @@ select.sel:focus{border-color:rgba(0,153,204,.45)}
   </div>
   <div class="lbl">Valor da venda</div>
   <div class="inp-pfx" style="margin-bottom:10px"><span class="pfx">R$</span>
-    <input type="text" inputmode="numeric" id="editVdVenda" class="inp currency-input">
+    <input type="text" inputmode="numeric" id="editVdVenda" class="inp currency-input" placeholder=" 0,00">
   </div>
   <div class="lbl">Comissão total</div>
   <div class="inp-pfx" style="margin-bottom:10px"><span class="pfx">R$</span>
-    <input type="text" inputmode="numeric" id="editVdComissao" class="inp currency-input">
+    <input type="text" inputmode="numeric" id="editVdComissao" class="inp currency-input" placeholder=" 0,00">
   </div>
   <hr class="divider">
   <div class="g2" style="margin-bottom:12px">
     <div><div class="lbl" style="margin-top:0">Symone</div>
-      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdSymone" class="inp currency-input"></div></div>
+      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdSymone" class="inp currency-input" placeholder=" 0,00"></div></div>
     <div><div class="lbl" style="margin-top:0">Rodrigo</div>
-      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdRodrigo" class="inp currency-input"></div></div>
+      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdRodrigo" class="inp currency-input" placeholder=" 0,00"></div></div>
     <div><div class="lbl" style="margin-top:0">Custo Extra</div>
-      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdCusto" class="inp currency-input"></div></div>
+      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdCusto" class="inp currency-input" placeholder=" 0,00"></div></div>
     <div><div class="lbl" style="margin-top:0">Deslocamento</div>
-      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdDesloc" class="inp currency-input"></div></div>
+      <div class="inp-pfx"><span class="pfx">R$</span><input type="text" inputmode="numeric" id="editVdDesloc" class="inp currency-input" placeholder=" 0,00"></div></div>
   </div>
   <button class="btn btn-primary" onclick="salvarEdicaoVd()" style="margin-bottom:8px">💾 Salvar alterações</button>
   <button class="btn btn-outline" onclick="$('modalEditVd').classList.remove('on')">Cancelar</button>
 </div>
 </div>
 
+
+<!-- SUPABASE SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ══════════════════════════════════════════════════════
    FINANCEIRO ZAPCRED v4 — Supabase Primary
@@ -920,8 +923,15 @@ function _sbCfg(){return{url:localStorage.getItem(SB_URL_KEY)||'',key:localStora
 function _sbOn(){const c=window._sbClient,cfg=_sbCfg();return !!(c&&cfg.ativo&&cfg.url&&cfg.key);}
 function _sbInit(){
   const cfg=_sbCfg();
-  if(cfg.ativo&&cfg.url&&cfg.key&&window.supabase){
-    try{window._sbClient=window.supabase.createClient(cfg.url,cfg.key);}catch(e){window._sbClient=null;}
+  if(cfg.ativo&&cfg.url&&cfg.key){
+    if(window.supabase){
+      try{window._sbClient=window.supabase.createClient(cfg.url,cfg.key);}catch(e){window._sbClient=null;}
+    }else{
+      // SDK not yet loaded, retry after a tick
+      setTimeout(()=>{
+        if(window.supabase){try{window._sbClient=window.supabase.createClient(cfg.url,cfg.key);}catch(e){window._sbClient=null;}}
+      },500);
+    }
   }else{window._sbClient=null;}
 }
 
@@ -1833,7 +1843,5 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 </script>
-<!-- SUPABASE SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
